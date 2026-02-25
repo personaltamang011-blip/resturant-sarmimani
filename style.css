@@ -1,9 +1,11 @@
+/* Reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Body */
 body {
   font-family: "Poppins", sans-serif;
   background: #f9fafb;
@@ -25,36 +27,45 @@ body {
 h1 {
   text-align: center;
   margin-bottom: 25px;
-  color: #746361;
+  color: #e85a4f;
 }
 
+/* Menu Section */
 .menu-section {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 15px;
   margin-bottom: 30px;
 }
 
 label {
   font-weight: 600;
+  flex: 1 1 100%;
 }
 
 select, input[type="number"], input[type="text"], input[type="date"] {
   padding: 10px;
-  border: 2px solid #556359;
+  border: 2px solid #e85a4f;
   border-radius: 8px;
   outline: none;
-  width: 100%;
+  flex: 1 1 250px;
+  min-width: 220px;
 }
 
 .manual-item-section {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   align-items: center;
+  width: 100%;
+}
+
+.manual-item-section select {
+  flex: 1 1 250px;
 }
 
 .manual-item-section button {
-  background: #6f7681;
+  background: #1e293b;
   color: #fff;
   border: none;
   padding: 10px 15px;
@@ -65,20 +76,18 @@ select, input[type="number"], input[type="text"], input[type="date"] {
 }
 
 .manual-item-section button:hover {
-  background: #335555;
+  background: #334155;
 }
 
 .manual-item-section input {
-  flex: 1;
+  flex: 1 1 250px;
   padding: 10px;
   border-radius: 8px;
   border: 2px solid #e85a4f;
-  display: block;
 }
 
 .price-section, .qty-section {
-  display: flex;
-  flex-direction: column;
+  flex: 1 1 250px;
 }
 
 .price-input {
@@ -88,7 +97,7 @@ select, input[type="number"], input[type="text"], input[type="date"] {
 }
 
 #manualPriceBtn {
-  background: #1c9626;
+  background: #e85a4f;
   color: #fff;
   border: none;
   padding: 8px 14px;
@@ -99,24 +108,35 @@ select, input[type="number"], input[type="text"], input[type="date"] {
 
 button {
   padding: 10px 15px;
-  background: #13b150;
+  background: #e85a4f;
   color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 
 button:hover {
   background: #cf4339;
 }
 
+/* Invoice Section */
 .invoice-section h2 {
   color: #333;
   margin-bottom: 10px;
+  text-align: center;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 10px;
 }
 
 table {
   width: 100%;
+  min-width: 600px;
   border-collapse: collapse;
   margin-bottom: 15px;
 }
@@ -125,10 +145,11 @@ th, td {
   border: 1px solid #ddd;
   padding: 10px;
   text-align: center;
+  word-wrap: break-word;
 }
 
 th {
-  background: #a8345b;
+  background: #e85a4f;
   color: white;
 }
 
@@ -137,8 +158,74 @@ th {
   font-size: 1.2rem;
   font-weight: bold;
   color: #222;
+  margin-top: 10px;
 }
 
+/* ---------- Responsive Layout ---------- */
+@media (max-width: 900px) {
+  .container {
+    padding: 25px;
+  }
+
+  .menu-section {
+    flex-direction: column;
+  }
+
+  select, input, button {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .manual-item-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .manual-item-section button {
+    width: 100%;
+  }
+
+  table th, table td {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  table th, table td {
+    font-size: 0.8rem;
+    padding: 6px;
+  }
+
+  .invoice-total {
+    font-size: 1rem;
+  }
+
+  button {
+    width: 100%;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 400px) {
+  h1 {
+    font-size: 1.2rem;
+  }
+
+  th, td {
+    font-size: 0.75rem;
+  }
+
+  input, select, button {
+    font-size: 0.85rem;
+  }
+}
+
+/* ---------- Print View ---------- */
 @media print {
   body * {
     visibility: hidden;
