@@ -1,0 +1,155 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background: #f9fafb;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  padding: 40px 10px;
+}
+
+.container {
+  background: #fff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  max-width: 900px;
+  width: 100%;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #e85a4f;
+}
+
+.menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+label {
+  font-weight: 600;
+}
+
+select, input[type="number"], input[type="text"], input[type="date"] {
+  padding: 10px;
+  border: 2px solid #e85a4f;
+  border-radius: 8px;
+  outline: none;
+  width: 100%;
+}
+
+.manual-item-section {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.manual-item-section button {
+  background: #1e293b;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.3s;
+}
+
+.manual-item-section button:hover {
+  background: #334155;
+}
+
+.manual-item-section input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #e85a4f;
+  display: block;
+}
+
+.price-section, .qty-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.price-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#manualPriceBtn {
+  background: #e85a4f;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  font-size: 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button {
+  padding: 10px 15px;
+  background: #e85a4f;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #cf4339;
+}
+
+.invoice-section h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  background: #e85a4f;
+  color: white;
+}
+
+.invoice-total {
+  text-align: right;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #222;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .invoice-section, .invoice-section * {
+    visibility: visible;
+  }
+  .invoice-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

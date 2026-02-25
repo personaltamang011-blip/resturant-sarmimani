@@ -1,0 +1,14 @@
+data/foods.json
+data/drinks.json
+data/snacks.json
+
+
+{
+  "MainCategory": {
+    "Subcategory1": {
+      "Subcategory2": [
+        { "name": "Item Name", "price": 100 }
+      ]
+    }
+  }
+}

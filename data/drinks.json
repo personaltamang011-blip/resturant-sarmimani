@@ -1,0 +1,16 @@
+{
+  "Drinks": {
+    "Hot": {
+      "Tea": [
+        { "name": "Milk Tea", "price": 40 },
+        { "name": "Black Coffee", "price": 60 }
+      ]
+    },
+    "Cold": {
+      "Juice": [
+        { "name": "Mango Juice", "price": 90 },
+        { "name": "Orange Juice", "price": 100 }
+      ]
+    }
+  }
+}

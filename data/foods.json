@@ -1,0 +1,16 @@
+{
+  "Food": {
+    "Breakfast": {
+      "Local": [
+        { "name": "Puri Tarkari", "price": 120 },
+        { "name": "Aloo Paratha", "price": 100 }
+      ]
+    },
+    "Lunch": {
+      "Veg": [
+        { "name": "Dal Bhat", "price": 180 },
+        { "name": "Paneer Curry", "price": 220 }
+      ]
+    }
+  }
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restaurant Menu & Invoice</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🍽️ Restaurant Menu & Invoice Generator</h1>
+
+    <!-- Menu Section -->
+    <div class="menu-section">
+      <label>Date:</label>
+      <input type="date" id="entryDate" />
+
+      <label>Main Category:</label>
+      <select id="mainCategory" onchange="updateSubCategory1()">
+        <option value="">-- Select Main Category --</option>
+      </select>
+
+      <label>Subcategory 1:</label>
+      <select id="subCategory1" onchange="updateSubCategory2()">
+        <option value="">-- Select Subcategory 1 --</option>
+      </select>
+
+      <label>Subcategory 2:</label>
+      <select id="subCategory2" onchange="updateItems()">
+        <option value="">-- Select Subcategory 2 --</option>
+      </select>
+
+      <label>Items:</label>
+      <div class="manual-item-section">
+        <select id="itemList" onchange="autoFillPrice()">
+          <option value="">-- Select Item --</option>
+        </select>
+        <button id="toggleManualItemBtn" onclick="toggleManualItem()">Manual Item Entry</button>
+        <input type="text" id="manualItemInput" placeholder="Enter custom item name" style="display:none;">
+      </div>
+
+      <div class="price-section">
+        <label>Price (Rs):</label>
+        <div class="price-input">
+          <input type="number" id="priceInput" placeholder="Auto Price" readonly />
+          <button id="manualPriceBtn" onclick="enterManualPrice()">+</button>
+        </div>
+      </div>
+
+      <div class="qty-section">
+        <label>Quantity:</label>
+        <input type="number" id="quantityInput" min="1" value="1" />
+      </div>
+
+      <button onclick="addToInvoice()">Add to Invoice</button>
+    </div>
+
+    <!-- Invoice Section -->
+    <div class="invoice-section">
+      <h2>🧾 Invoice</h2>
+      <table id="invoiceTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Item Name</th>
+            <th>Price (Rs)</th>
+            <th>Quantity</th>
+            <th>Total (Rs)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="invoice-total">
+        <h3>Total Amount: Rs <span id="grandTotal">0</span></h3>
+      </div>
+
+      <button onclick="printInvoice()">🖨️ Print Invoice</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
