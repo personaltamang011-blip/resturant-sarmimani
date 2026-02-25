@@ -1,0 +1,16 @@
+{
+  "Juice": {
+    "Fresh juice": {
+      "Cold": [
+        { "name": "Watermelon Juice", "price": 120 },
+        { "name": "Orange Juice", "price": 100 }
+      ]
+    },
+    "Mixed Juice": {
+      "Hot": [
+        { "name": "All Mixed", "price": 180 },
+        { "name": "Warm Mixed", "price": 220 }
+      ]
+    }
+  }
+}

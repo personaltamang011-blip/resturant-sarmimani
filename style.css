@@ -1,11 +1,7 @@
-/* Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* Base Reset */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* Body */
+/* Layout */
 body {
   font-family: "Poppins", sans-serif;
   background: #f9fafb;
@@ -24,6 +20,7 @@ body {
   width: 100%;
 }
 
+/* Headings */
 h1 {
   text-align: center;
   margin-bottom: 25px;
@@ -38,12 +35,9 @@ h1 {
   margin-bottom: 30px;
 }
 
-label {
-  font-weight: 600;
-  flex: 1 1 100%;
-}
+label { font-weight: 600; flex: 1 1 100%; }
 
-select, input[type="number"], input[type="text"], input[type="date"] {
+select, input[type="number"], input[type="text"] {
   padding: 10px;
   border: 2px solid #e85a4f;
   border-radius: 8px;
@@ -60,10 +54,6 @@ select, input[type="number"], input[type="text"], input[type="date"] {
   width: 100%;
 }
 
-.manual-item-section select {
-  flex: 1 1 250px;
-}
-
 .manual-item-section button {
   background: #1e293b;
   color: #fff;
@@ -71,24 +61,11 @@ select, input[type="number"], input[type="text"], input[type="date"] {
   padding: 10px 15px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 0.9rem;
   transition: background 0.3s;
 }
+.manual-item-section button:hover { background: #334155; }
 
-.manual-item-section button:hover {
-  background: #334155;
-}
-
-.manual-item-section input {
-  flex: 1 1 250px;
-  padding: 10px;
-  border-radius: 8px;
-  border: 2px solid #e85a4f;
-}
-
-.price-section, .qty-section {
-  flex: 1 1 250px;
-}
+.price-section, .qty-section { flex: 1 1 250px; }
 
 .price-input {
   display: flex;
@@ -106,6 +83,7 @@ select, input[type="number"], input[type="text"], input[type="date"] {
   cursor: pointer;
 }
 
+/* Buttons */
 button {
   padding: 10px 15px;
   background: #e85a4f;
@@ -115,10 +93,49 @@ button {
   cursor: pointer;
   transition: background 0.3s ease;
 }
+button:hover { background: #cf4339; }
 
-button:hover {
-  background: #cf4339;
+/* Special Action Buttons */
+#clearAllBtn {
+  background-color: #f59e0b;
 }
+#clearAllBtn:hover {
+  background-color: #d97706;
+}
+
+/* Reset button styling (matches other actions) */
+.controls-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 8px;
+}
+
+#resetBtn {
+  background-color: #3b82f6; /* blue-500 */
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+#resetBtn:hover {
+  background-color: #2563eb; /* blue-600 */
+}
+
+.action-btn {
+  margin: 2px 4px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  border: none;
+  cursor: pointer;
+}
+.edit-btn { background: #0ea5e9; color: #fff; }
+.edit-btn:hover { background: #0284c7; }
+.delete-btn { background: #ef4444; color: #fff; }
+.delete-btn:hover { background: #b91c1c; }
 
 /* Invoice Section */
 .invoice-section h2 {
@@ -126,124 +143,27 @@ button:hover {
   margin-bottom: 10px;
   text-align: center;
 }
-
 .table-wrapper {
   overflow-x: auto;
   width: 100%;
-  -webkit-overflow-scrolling: touch;
-  margin-top: 10px;
 }
-
 table {
   width: 100%;
-  min-width: 600px;
   border-collapse: collapse;
-  margin-bottom: 15px;
+  margin-top: 10px;
 }
-
 th, td {
   border: 1px solid #ddd;
   padding: 10px;
   text-align: center;
-  word-wrap: break-word;
 }
-
 th {
   background: #e85a4f;
   color: white;
 }
 
-.invoice-total {
-  text-align: right;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #222;
-  margin-top: 10px;
-}
-
-/* ---------- Responsive Layout ---------- */
-@media (max-width: 900px) {
-  .container {
-    padding: 25px;
-  }
-
-  .menu-section {
-    flex-direction: column;
-  }
-
-  select, input, button {
-    width: 100%;
-    font-size: 1rem;
-  }
-
-  .manual-item-section {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .manual-item-section button {
-    width: 100%;
-  }
-
-  table th, table td {
-    font-size: 0.9rem;
-    padding: 8px;
-  }
-}
-
+/* Responsive */
 @media (max-width: 600px) {
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  table th, table td {
-    font-size: 0.8rem;
-    padding: 6px;
-  }
-
-  .invoice-total {
-    font-size: 1rem;
-  }
-
-  button {
-    width: 100%;
-    font-size: 0.9rem;
-  }
-}
-
-.flatpickr-input {
-  border: 2px solid #e85a4f;
-  border-radius: 8px;
-  padding: 10px;
-  width: 100%;
-}
-
-@media (max-width: 400px) {
-  h1 {
-    font-size: 1.2rem;
-  }
-
-  th, td {
-    font-size: 0.75rem;
-  }
-
-  input, select, button {
-    font-size: 0.85rem;
-  }
-}
-
-/* ---------- Print View ---------- */
-@media print {
-  body * {
-    visibility: hidden;
-  }
-  .invoice-section, .invoice-section * {
-    visibility: visible;
-  }
-  .invoice-section {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-  }
+  .menu-section { flex-direction: column; }
+  button, select, input { width: 100%; }
 }
