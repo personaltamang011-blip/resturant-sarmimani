@@ -1,4 +1,4 @@
-// script.js (fixed & more robust)
+// script.js (fixed, robust & with Flatpickr integration)
 
 let menuData = {};
 let grandTotal = 0;
@@ -15,6 +15,18 @@ const manualItemInput = document.getElementById("manualItemInput");
 const invoiceTable = document.querySelector("#invoiceTable tbody");
 const grandTotalElement = document.getElementById("grandTotal");
 const entryDate = document.getElementById("entryDate");
+
+// ---------- Initialize Flatpickr ----------
+document.addEventListener("DOMContentLoaded", function () {
+  if (typeof flatpickr !== "undefined" && entryDate) {
+    flatpickr("#entryDate", {
+      dateFormat: "Y-m-d",
+      allowInput: true, // allow typing manually
+      altInput: true,   // show readable version like “February 25, 2026”
+      altFormat: "F j, Y"
+    });
+  }
+});
 
 // ---------- Dynamic JSON loader (safe) ----------
 function loadAllJsons() {
@@ -36,7 +48,7 @@ function loadAllJsons() {
     .then(results => {
       results.forEach(d => Object.assign(menuData, d));
       loadMainCategories();
-      console.info("Menu JSONs loaded successfully.");
+      console.info("✅ Menu JSONs loaded successfully.");
     });
 }
 
@@ -47,7 +59,7 @@ window.addEventListener("load", () => {
 
   // Attempt to load menu JSONs; if it fails, still continue (we already restored invoice)
   loadAllJsons().catch(err => {
-    console.warn("Could not load JSON files for menu. Dropdowns will be empty until files are available.", err);
+    console.warn("⚠️ Could not load JSON files for menu. Dropdowns will be empty until files are available.", err);
     // Still call loadMainCategories() if menuData was populated some other way
     if (Object.keys(menuData).length) loadMainCategories();
   });

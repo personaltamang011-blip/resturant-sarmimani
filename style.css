@@ -211,6 +211,13 @@ th {
   }
 }
 
+.flatpickr-input {
+  border: 2px solid #e85a4f;
+  border-radius: 8px;
+  padding: 10px;
+  width: 100%;
+}
+
 @media (max-width: 400px) {
   h1 {
     font-size: 1.2rem;
