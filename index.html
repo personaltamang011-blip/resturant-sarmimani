@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Restaurant Menu & Invoice</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Menu & Invoice Generator</title>
+
+
+
+  <!-- Your CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,7 +17,7 @@
     <!-- Menu Section -->
     <div class="menu-section">
       <label>Date:</label>
-    <input type="text" id="entryDate" placeholder="Select or type date" />
+      <input type="text" id="entryDate" placeholder="YYYY-MM-DD (type or pick)" />
 
       <label>Main Category:</label>
       <select id="mainCategory" onchange="updateSubCategory1()">
@@ -83,6 +85,7 @@
     </div>
   </div>
 
+  <!-- Script -->
   <script src="script.js"></script>
 </body>
 </html>

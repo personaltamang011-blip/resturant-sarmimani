@@ -1,5 +1,3 @@
-// script.js (fixed, robust & with Flatpickr integration)
-
 let menuData = {};
 let grandTotal = 0;
 let manualMode = false;
@@ -16,99 +14,55 @@ const invoiceTable = document.querySelector("#invoiceTable tbody");
 const grandTotalElement = document.getElementById("grandTotal");
 const entryDate = document.getElementById("entryDate");
 
-// ---------- Initialize Flatpickr ----------
-document.addEventListener("DOMContentLoaded", function () {
-  if (typeof flatpickr !== "undefined" && entryDate) {
-    flatpickr("#entryDate", {
-      dateFormat: "Y-m-d",
-      allowInput: true,  // allows manual typing
-      altInput: false,   // disables readonly alternate input
-      clickOpens: true   // keeps calendar on tap/click
-    });
-    console.log("✅ Flatpickr active: manual typing + calendar enabled");
-  }
-});
 
-// ---------- Dynamic JSON loader (safe) ----------
+// ---------- Load JSON ----------
 function loadAllJsons() {
-  // Try to fetch data/list.json which should contain an array of filenames
   return fetch("data/list.json")
-    .then(res => {
-      if (!res.ok) throw new Error("list.json not found or returned " + res.status);
-      return res.json();
-    })
-    .then(files => {
-      const promises = (files || []).map(f =>
-        fetch(`data/${f}`).then(r => {
-          if (!r.ok) throw new Error(`Failed to load data/${f} (status ${r.status})`);
-          return r.json();
-        })
-      );
-      return Promise.all(promises);
-    })
+    .then(res => res.json())
+    .then(files => Promise.all((files||[]).map(f => fetch(`data/${f}`).then(r => r.json()))))
     .then(results => {
       results.forEach(d => Object.assign(menuData, d));
       loadMainCategories();
-      console.info("✅ Menu JSONs loaded successfully.");
     });
 }
 
-// ---------- Initialization ----------
+// ---------- Init ----------
 window.addEventListener("load", () => {
-  // Always try to load saved invoice rows (so localStorage works even if JSON fetch fails)
   loadFromLocalStorage();
-
-  // Attempt to load menu JSONs; if it fails, still continue (we already restored invoice)
-  loadAllJsons().catch(err => {
-    console.warn("⚠️ Could not load JSON files for menu. Dropdowns will be empty until files are available.", err);
-    // Still call loadMainCategories() if menuData was populated some other way
-    if (Object.keys(menuData).length) loadMainCategories();
-  });
+  loadAllJsons().catch(err => console.warn(err));
 });
 
-// ---------- Populate main categories ----------
+// ---------- Dropdowns ----------
 function loadMainCategories() {
-  if (!mainCategory) return;
   mainCategory.innerHTML = '<option value="">-- Select Main Category --</option>';
   Object.keys(menuData).forEach(cat => mainCategory.appendChild(new Option(cat, cat)));
 }
 
-// ---------- Dropdown updates ----------
 function updateSubCategory1() {
-  if (!subCategory1 || !subCategory2 || !itemList) return;
   subCategory1.innerHTML = '<option value="">-- Select Subcategory 1 --</option>';
   subCategory2.innerHTML = '<option value="">-- Select Subcategory 2 --</option>';
   itemList.innerHTML = '<option value="">-- Select Item --</option>';
-  priceInput && (priceInput.value = "");
   if (manualMode) return;
   const sel = mainCategory.value;
-  if (sel && menuData[sel]) {
-    Object.keys(menuData[sel]).forEach(sub => subCategory1.appendChild(new Option(sub, sub)));
-  }
+  if (sel && menuData[sel]) Object.keys(menuData[sel]).forEach(sub => subCategory1.appendChild(new Option(sub, sub)));
 }
 
 function updateSubCategory2() {
-  if (!subCategory2 || !itemList) return;
   subCategory2.innerHTML = '<option value="">-- Select Subcategory 2 --</option>';
   itemList.innerHTML = '<option value="">-- Select Item --</option>';
-  priceInput && (priceInput.value = "");
   if (manualMode) return;
   const main = mainCategory.value;
   const sub1 = subCategory1.value;
-  if (main && sub1 && menuData[main] && menuData[main][sub1]) {
-    Object.keys(menuData[main][sub1]).forEach(sub => subCategory2.appendChild(new Option(sub, sub)));
-  }
+  if (main && sub1 && menuData[main][sub1]) Object.keys(menuData[main][sub1]).forEach(sub => subCategory2.appendChild(new Option(sub, sub)));
 }
 
 function updateItems() {
-  if (!itemList) return;
   itemList.innerHTML = '<option value="">-- Select Item --</option>';
-  priceInput && (priceInput.value = "");
   if (manualMode) return;
   const main = mainCategory.value;
   const sub1 = subCategory1.value;
   const sub2 = subCategory2.value;
-  if (main && sub1 && sub2 && menuData[main] && menuData[main][sub1] && menuData[main][sub1][sub2]) {
+  if (main && sub1 && sub2 && menuData[main][sub1][sub2]) {
     menuData[main][sub1][sub2].forEach(item => {
       const opt = new Option(item.name, item.name);
       opt.dataset.price = item.price;
@@ -117,57 +71,43 @@ function updateItems() {
   }
 }
 
-// ---------- Auto-fill price ----------
 function autoFillPrice() {
-  if (manualMode || !itemList) return;
+  if (manualMode) return;
   const sel = itemList.options[itemList.selectedIndex];
   if (priceInput) priceInput.value = sel?.dataset?.price || "";
 }
 
-// ---------- Manual price entry ----------
 function enterManualPrice() {
   const val = prompt("Enter custom price (Rs):");
-  if (val !== null && val !== "" && !isNaN(val)) {
-    if (priceInput) priceInput.value = val;
-  } else if (val !== null) {
-    alert("Invalid price entered.");
-  }
+  if (val !== null && val !== "" && !isNaN(val)) priceInput.value = val;
 }
 
-// ---------- Toggle manual item entry ----------
 function toggleManualItem() {
   manualMode = !manualMode;
   const toggleBtn = document.getElementById("toggleManualItemBtn");
   if (manualMode) {
-    if (itemList) itemList.style.display = "none";
-    if (manualItemInput) {
-      manualItemInput.style.display = "block";
-      manualItemInput.focus();
-    }
-    if (toggleBtn) toggleBtn.textContent = "Cancel Manual Entry";
-    if (priceInput) priceInput.readOnly = false;
+    itemList.style.display = "none";
+    manualItemInput.style.display = "block";
+    manualItemInput.focus();
+    toggleBtn.textContent = "Cancel Manual Entry";
+    priceInput.readOnly = false;
   } else {
-    if (itemList) itemList.style.display = "block";
-    if (manualItemInput) {
-      manualItemInput.style.display = "none";
-      manualItemInput.value = "";
-    }
-    if (toggleBtn) toggleBtn.textContent = "Manual Item Entry";
-    if (priceInput) {
-      priceInput.value = "";
-      priceInput.readOnly = true;
-    }
+    itemList.style.display = "block";
+    manualItemInput.style.display = "none";
+    manualItemInput.value = "";
+    toggleBtn.textContent = "Manual Item Entry";
+    priceInput.value = "";
+    priceInput.readOnly = true;
   }
 }
 
-// ---------- Add to invoice ----------
 function addToInvoice() {
-  const dateVal = entryDate?.value || "";
-  const itemName = manualMode ? (manualItemInput?.value || "").trim() : (itemList?.value || "");
-  if (!itemName) { alert("Enter/select item!"); return; }
-  const price = parseFloat(priceInput?.value);
-  const qty = parseInt(quantityInput?.value);
-  if (isNaN(price) || qty <= 0) { alert("Enter valid price/quantity!"); return; }
+  const dateVal = entryDate.value || "";
+  const itemName = manualMode ? manualItemInput.value.trim() : itemList.value;
+  if (!itemName) return alert("Enter/select item!");
+  const price = parseFloat(priceInput.value);
+  const qty = parseInt(quantityInput.value);
+  if (isNaN(price) || qty <= 0) return alert("Enter valid price/quantity!");
   const total = price * qty;
 
   const row = invoiceTable.insertRow();
@@ -178,16 +118,14 @@ function addToInvoice() {
   row.insertCell(4).textContent = total.toFixed(2);
 
   grandTotal += total;
-  if (grandTotalElement) grandTotalElement.textContent = grandTotal.toFixed(2);
+  grandTotalElement.textContent = grandTotal.toFixed(2);
 
-  if (manualMode && manualItemInput) manualItemInput.value = "";
+  if (manualMode) manualItemInput.value = "";
   saveToLocalStorage();
 }
 
-// ---------- Print ----------
 function printInvoice() { window.print(); }
 
-// ---------- Local storage ----------
 function saveToLocalStorage() {
   const tableData = [];
   invoiceTable.querySelectorAll("tr").forEach(row => {
@@ -200,36 +138,20 @@ function saveToLocalStorage() {
       total: parseFloat(c[4].textContent)
     });
   });
-  try {
-    localStorage.setItem("invoiceData", JSON.stringify(tableData));
-  } catch (e) {
-    console.error("Could not save to localStorage:", e);
-  }
+  localStorage.setItem("invoiceData", JSON.stringify(tableData));
 }
 
 function loadFromLocalStorage() {
-  const raw = localStorage.getItem("invoiceData") || "[]";
-  let stored = [];
-  try {
-    stored = JSON.parse(raw);
-  } catch (e) {
-    console.warn("Invalid invoiceData in localStorage, clearing it.");
-    localStorage.removeItem("invoiceData");
-    stored = [];
-  }
-
-  // clear current table rows (avoid duplication)
-  while (invoiceTable.firstChild) invoiceTable.removeChild(invoiceTable.firstChild);
-
+  const stored = JSON.parse(localStorage.getItem("invoiceData") || "[]");
+  invoiceTable.innerHTML = "";
   stored.forEach(entry => {
     const row = invoiceTable.insertRow();
     row.insertCell(0).textContent = entry.date || "";
     row.insertCell(1).textContent = entry.itemName || "";
     row.insertCell(2).textContent = (entry.price || 0).toFixed(2);
-    row.insertCell(3).textContent = (entry.quantity || 0);
+    row.insertCell(3).textContent = entry.quantity || 0;
     row.insertCell(4).textContent = (entry.total || 0).toFixed(2);
   });
-
   grandTotal = stored.reduce((sum, e) => sum + (e.total || 0), 0);
-  if (grandTotalElement) grandTotalElement.textContent = grandTotal.toFixed(2);
+  grandTotalElement.textContent = grandTotal.toFixed(2);
 }
