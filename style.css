@@ -25,7 +25,7 @@ body {
 h1 {
   text-align: center;
   margin-bottom: 25px;
-  color: #e85a4f;
+  color: #746361;
 }
 
 .menu-section {
@@ -41,7 +41,7 @@ label {
 
 select, input[type="number"], input[type="text"], input[type="date"] {
   padding: 10px;
-  border: 2px solid #e85a4f;
+  border: 2px solid #556359;
   border-radius: 8px;
   outline: none;
   width: 100%;
@@ -54,7 +54,7 @@ select, input[type="number"], input[type="text"], input[type="date"] {
 }
 
 .manual-item-section button {
-  background: #1e293b;
+  background: #6f7681;
   color: #fff;
   border: none;
   padding: 10px 15px;
@@ -65,7 +65,7 @@ select, input[type="number"], input[type="text"], input[type="date"] {
 }
 
 .manual-item-section button:hover {
-  background: #334155;
+  background: #335555;
 }
 
 .manual-item-section input {
@@ -88,7 +88,7 @@ select, input[type="number"], input[type="text"], input[type="date"] {
 }
 
 #manualPriceBtn {
-  background: #e85a4f;
+  background: #1c9626;
   color: #fff;
   border: none;
   padding: 8px 14px;
@@ -99,7 +99,7 @@ select, input[type="number"], input[type="text"], input[type="date"] {
 
 button {
   padding: 10px 15px;
-  background: #e85a4f;
+  background: #13b150;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -128,7 +128,7 @@ th, td {
 }
 
 th {
-  background: #e85a4f;
+  background: #a8345b;
   color: white;
 }
 

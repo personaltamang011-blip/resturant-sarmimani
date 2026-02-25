@@ -1,7 +1,10 @@
+// script.js (fixed & more robust)
+
 let menuData = {};
 let grandTotal = 0;
 let manualMode = false;
 
+// DOM references
 const mainCategory = document.getElementById("mainCategory");
 const subCategory1 = document.getElementById("subCategory1");
 const subCategory2 = document.getElementById("subCategory2");
@@ -13,55 +16,86 @@ const invoiceTable = document.querySelector("#invoiceTable tbody");
 const grandTotalElement = document.getElementById("grandTotal");
 const entryDate = document.getElementById("entryDate");
 
-// 🔹 Dynamic JSON Loading
-fetch("data/list.json")
-  .then(res => res.json())
-  .then(files => {
-    const promises = files.map(f => fetch(`data/${f}`).then(r => r.json()));
-    return Promise.all(promises);
-  })
-  .then(results => {
-    results.forEach(d => Object.assign(menuData, d));
-    loadMainCategories();
-    loadFromLocalStorage();
-  })
-  .catch(err => console.error("Error loading JSON files:", err));
+// ---------- Dynamic JSON loader (safe) ----------
+function loadAllJsons() {
+  // Try to fetch data/list.json which should contain an array of filenames
+  return fetch("data/list.json")
+    .then(res => {
+      if (!res.ok) throw new Error("list.json not found or returned " + res.status);
+      return res.json();
+    })
+    .then(files => {
+      const promises = (files || []).map(f =>
+        fetch(`data/${f}`).then(r => {
+          if (!r.ok) throw new Error(`Failed to load data/${f} (status ${r.status})`);
+          return r.json();
+        })
+      );
+      return Promise.all(promises);
+    })
+    .then(results => {
+      results.forEach(d => Object.assign(menuData, d));
+      loadMainCategories();
+      console.info("Menu JSONs loaded successfully.");
+    });
+}
 
-// 🔹 Populate main categories
+// ---------- Initialization ----------
+window.addEventListener("load", () => {
+  // Always try to load saved invoice rows (so localStorage works even if JSON fetch fails)
+  loadFromLocalStorage();
+
+  // Attempt to load menu JSONs; if it fails, still continue (we already restored invoice)
+  loadAllJsons().catch(err => {
+    console.warn("Could not load JSON files for menu. Dropdowns will be empty until files are available.", err);
+    // Still call loadMainCategories() if menuData was populated some other way
+    if (Object.keys(menuData).length) loadMainCategories();
+  });
+});
+
+// ---------- Populate main categories ----------
 function loadMainCategories() {
+  if (!mainCategory) return;
   mainCategory.innerHTML = '<option value="">-- Select Main Category --</option>';
   Object.keys(menuData).forEach(cat => mainCategory.appendChild(new Option(cat, cat)));
 }
 
-// 🔹 Dropdown updates
+// ---------- Dropdown updates ----------
 function updateSubCategory1() {
+  if (!subCategory1 || !subCategory2 || !itemList) return;
   subCategory1.innerHTML = '<option value="">-- Select Subcategory 1 --</option>';
   subCategory2.innerHTML = '<option value="">-- Select Subcategory 2 --</option>';
   itemList.innerHTML = '<option value="">-- Select Item --</option>';
-  priceInput.value = "";
+  priceInput && (priceInput.value = "");
   if (manualMode) return;
   const sel = mainCategory.value;
-  if (sel) Object.keys(menuData[sel]).forEach(sub => subCategory1.appendChild(new Option(sub, sub)));
+  if (sel && menuData[sel]) {
+    Object.keys(menuData[sel]).forEach(sub => subCategory1.appendChild(new Option(sub, sub)));
+  }
 }
 
 function updateSubCategory2() {
+  if (!subCategory2 || !itemList) return;
   subCategory2.innerHTML = '<option value="">-- Select Subcategory 2 --</option>';
   itemList.innerHTML = '<option value="">-- Select Item --</option>';
-  priceInput.value = "";
+  priceInput && (priceInput.value = "");
   if (manualMode) return;
   const main = mainCategory.value;
   const sub1 = subCategory1.value;
-  if (main && sub1) Object.keys(menuData[main][sub1]).forEach(sub => subCategory2.appendChild(new Option(sub, sub)));
+  if (main && sub1 && menuData[main] && menuData[main][sub1]) {
+    Object.keys(menuData[main][sub1]).forEach(sub => subCategory2.appendChild(new Option(sub, sub)));
+  }
 }
 
 function updateItems() {
+  if (!itemList) return;
   itemList.innerHTML = '<option value="">-- Select Item --</option>';
-  priceInput.value = "";
+  priceInput && (priceInput.value = "");
   if (manualMode) return;
   const main = mainCategory.value;
   const sub1 = subCategory1.value;
   const sub2 = subCategory2.value;
-  if (main && sub1 && sub2) {
+  if (main && sub1 && sub2 && menuData[main] && menuData[main][sub1] && menuData[main][sub1][sub2]) {
     menuData[main][sub1][sub2].forEach(item => {
       const opt = new Option(item.name, item.name);
       opt.dataset.price = item.price;
@@ -70,46 +104,57 @@ function updateItems() {
   }
 }
 
-// 🔹 Auto-fill price
+// ---------- Auto-fill price ----------
 function autoFillPrice() {
-  if (manualMode) return;
+  if (manualMode || !itemList) return;
   const sel = itemList.options[itemList.selectedIndex];
-  priceInput.value = sel?.dataset.price || "";
+  if (priceInput) priceInput.value = sel?.dataset?.price || "";
 }
 
-// 🔹 Manual price entry
+// ---------- Manual price entry ----------
 function enterManualPrice() {
   const val = prompt("Enter custom price (Rs):");
-  if (val && !isNaN(val)) priceInput.value = val;
-}
-
-// 🔹 Toggle manual item entry
-function toggleManualItem() {
-  manualMode = !manualMode;
-  if (manualMode) {
-    itemList.style.display = "none";
-    manualItemInput.style.display = "block";
-    manualItemInput.focus();
-    document.getElementById("toggleManualItemBtn").textContent = "Cancel Manual Entry";
-    priceInput.readOnly = false;
-  } else {
-    itemList.style.display = "block";
-    manualItemInput.style.display = "none";
-    manualItemInput.value = "";
-    document.getElementById("toggleManualItemBtn").textContent = "Manual Item Entry";
-    priceInput.value = "";
-    priceInput.readOnly = true;
+  if (val !== null && val !== "" && !isNaN(val)) {
+    if (priceInput) priceInput.value = val;
+  } else if (val !== null) {
+    alert("Invalid price entered.");
   }
 }
 
-// 🔹 Add to invoice + save to localStorage
+// ---------- Toggle manual item entry ----------
+function toggleManualItem() {
+  manualMode = !manualMode;
+  const toggleBtn = document.getElementById("toggleManualItemBtn");
+  if (manualMode) {
+    if (itemList) itemList.style.display = "none";
+    if (manualItemInput) {
+      manualItemInput.style.display = "block";
+      manualItemInput.focus();
+    }
+    if (toggleBtn) toggleBtn.textContent = "Cancel Manual Entry";
+    if (priceInput) priceInput.readOnly = false;
+  } else {
+    if (itemList) itemList.style.display = "block";
+    if (manualItemInput) {
+      manualItemInput.style.display = "none";
+      manualItemInput.value = "";
+    }
+    if (toggleBtn) toggleBtn.textContent = "Manual Item Entry";
+    if (priceInput) {
+      priceInput.value = "";
+      priceInput.readOnly = true;
+    }
+  }
+}
+
+// ---------- Add to invoice ----------
 function addToInvoice() {
-  const dateVal = entryDate.value || "";
-  const itemName = manualMode ? manualItemInput.value.trim() : itemList.value;
-  if (!itemName) return alert("Enter/select item!");
-  const price = parseFloat(priceInput.value);
-  const qty = parseInt(quantityInput.value);
-  if (isNaN(price) || qty <= 0) return alert("Enter valid price/quantity!");
+  const dateVal = entryDate?.value || "";
+  const itemName = manualMode ? (manualItemInput?.value || "").trim() : (itemList?.value || "");
+  if (!itemName) { alert("Enter/select item!"); return; }
+  const price = parseFloat(priceInput?.value);
+  const qty = parseInt(quantityInput?.value);
+  if (isNaN(price) || qty <= 0) { alert("Enter valid price/quantity!"); return; }
   const total = price * qty;
 
   const row = invoiceTable.insertRow();
@@ -120,17 +165,16 @@ function addToInvoice() {
   row.insertCell(4).textContent = total.toFixed(2);
 
   grandTotal += total;
-  grandTotalElement.textContent = grandTotal.toFixed(2);
-  if (manualMode) manualItemInput.value = "";
+  if (grandTotalElement) grandTotalElement.textContent = grandTotal.toFixed(2);
+
+  if (manualMode && manualItemInput) manualItemInput.value = "";
   saveToLocalStorage();
 }
 
-// 🔹 Print invoice
-function printInvoice() {
-  window.print();
-}
+// ---------- Print ----------
+function printInvoice() { window.print(); }
 
-// 🔹 Local storage functions
+// ---------- Local storage ----------
 function saveToLocalStorage() {
   const tableData = [];
   invoiceTable.querySelectorAll("tr").forEach(row => {
@@ -143,19 +187,36 @@ function saveToLocalStorage() {
       total: parseFloat(c[4].textContent)
     });
   });
-  localStorage.setItem("invoiceData", JSON.stringify(tableData));
+  try {
+    localStorage.setItem("invoiceData", JSON.stringify(tableData));
+  } catch (e) {
+    console.error("Could not save to localStorage:", e);
+  }
 }
 
 function loadFromLocalStorage() {
-  const stored = JSON.parse(localStorage.getItem("invoiceData") || "[]");
+  const raw = localStorage.getItem("invoiceData") || "[]";
+  let stored = [];
+  try {
+    stored = JSON.parse(raw);
+  } catch (e) {
+    console.warn("Invalid invoiceData in localStorage, clearing it.");
+    localStorage.removeItem("invoiceData");
+    stored = [];
+  }
+
+  // clear current table rows (avoid duplication)
+  while (invoiceTable.firstChild) invoiceTable.removeChild(invoiceTable.firstChild);
+
   stored.forEach(entry => {
     const row = invoiceTable.insertRow();
-    row.insertCell(0).textContent = entry.date;
-    row.insertCell(1).textContent = entry.itemName;
-    row.insertCell(2).textContent = entry.price.toFixed(2);
-    row.insertCell(3).textContent = entry.quantity;
-    row.insertCell(4).textContent = entry.total.toFixed(2);
+    row.insertCell(0).textContent = entry.date || "";
+    row.insertCell(1).textContent = entry.itemName || "";
+    row.insertCell(2).textContent = (entry.price || 0).toFixed(2);
+    row.insertCell(3).textContent = (entry.quantity || 0);
+    row.insertCell(4).textContent = (entry.total || 0).toFixed(2);
   });
-  grandTotal = stored.reduce((sum, e) => sum + e.total, 0);
-  grandTotalElement.textContent = grandTotal.toFixed(2);
+
+  grandTotal = stored.reduce((sum, e) => sum + (e.total || 0), 0);
+  if (grandTotalElement) grandTotalElement.textContent = grandTotal.toFixed(2);
 }

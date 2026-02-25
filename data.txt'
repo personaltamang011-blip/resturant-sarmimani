@@ -12,3 +12,42 @@ data/snacks.json
     }
   }
 }
+
+
+project/
+│
+├─ index.html
+├─ style.css
+├─ script.js
+├─ data/
+│   ├─ list.json
+│   ├─ foods.json
+│   ├─ drinks.json
+│   ├─ snacks.json
+
+
+data/list.json
+
+[
+  "foods.json",
+  "drinks.json",
+  "snacks.json"
+]
+
+
+{
+  "Food": {
+    "Breakfast": {
+      "Local": [
+        { "name": "Puri Tarkari", "price": 120 },
+        { "name": "Aloo Paratha", "price": 90 }
+      ]
+    },
+    "Lunch": {
+      "Veg": [
+        { "name": "Dal Bhat", "price": 180 },
+        { "name": "Vegetable Curry", "price": 150 }
+      ]
+    }
+  }
+}
