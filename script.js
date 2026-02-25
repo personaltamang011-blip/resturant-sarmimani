@@ -21,10 +21,11 @@ document.addEventListener("DOMContentLoaded", function () {
   if (typeof flatpickr !== "undefined" && entryDate) {
     flatpickr("#entryDate", {
       dateFormat: "Y-m-d",
-      allowInput: true, // allow typing manually
-      altInput: true,   // show readable version like “February 25, 2026”
-      altFormat: "F j, Y"
+      allowInput: true,  // allows manual typing
+      altInput: false,   // disables readonly alternate input
+      clickOpens: true   // keeps calendar on tap/click
     });
+    console.log("✅ Flatpickr active: manual typing + calendar enabled");
   }
 });
 
