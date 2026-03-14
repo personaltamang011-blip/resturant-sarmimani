@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A Progressive Web App for generating restaurant menus and invoices" />
+  <meta name="theme-color" content="#4b5563" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Restro Invoice" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
   <title>Restaurant Menu & Invoice Generator</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -12,31 +19,41 @@
 
     <!-- Menu Section -->
     <div class="menu-section">
-      <label>Date:</label>
-      <input type="text" id="entryDate" placeholder="YYYY-MM-DD (type manually)" />
+      <div class="form-group">
+        <label>Date:</label>
+        <input type="text" id="entryDate" placeholder="YYYY-MM-DD (type manually)" />
+      </div>
 
-      <label>Main Category:</label>
-      <select id="mainCategory" onchange="updateSubCategory1()">
-        <option value="">-- Select Main Category --</option>
-      </select>
-
-      <label>Subcategory 1:</label>
-      <select id="subCategory1" onchange="updateSubCategory2()">
-        <option value="">-- Select Subcategory 1 --</option>
-      </select>
-
-      <label>Subcategory 2:</label>
-      <select id="subCategory2" onchange="updateItems()">
-        <option value="">-- Select Subcategory 2 --</option>
-      </select>
-
-      <label>Items:</label>
-      <div class="manual-item-section">
-        <select id="itemList" onchange="autoFillPrice()">
-          <option value="">-- Select Item --</option>
+      <div class="form-group">
+        <label>Main Category:</label>
+        <select id="mainCategory" onchange="updateSubCategory1()">
+          <option value="">-- Select Main Category --</option>
         </select>
-        <button id="toggleManualItemBtn" onclick="toggleManualItem()">Manual Item Entry</button>
-        <input type="text" id="manualItemInput" placeholder="Enter custom item name" style="display:none;">
+      </div>
+
+      <div class="form-group">
+        <label>Subcategory 1:</label>
+        <select id="subCategory1" onchange="updateSubCategory2()">
+          <option value="">-- Select Subcategory 1 --</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Subcategory 2:</label>
+        <select id="subCategory2" onchange="updateItems()">
+          <option value="">-- Select Subcategory 2 --</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Items:</label>
+        <div class="manual-item-section">
+          <select id="itemList" onchange="autoFillPrice()">
+            <option value="">-- Select Item --</option>
+          </select>
+          <button id="toggleManualItemBtn" onclick="toggleManualItem()">Manual Item Entry</button>
+          <input type="text" id="manualItemInput" placeholder="Enter custom item name" style="display:none;">
+        </div>
       </div>
 
       <div class="price-section">
@@ -90,5 +107,20 @@
 
   <!-- Script -->
   <script src="script.js"></script>
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('SW registered: ', registration);
+          })
+          .catch(registrationError => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+  </script>
 </body>
 </html>

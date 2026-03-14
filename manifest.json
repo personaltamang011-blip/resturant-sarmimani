@@ -1,0 +1,36 @@
+{
+  "name": "Restaurant Menu & Invoice Generator",
+  "short_name": "Restro Invoice",
+  "description": "A Progressive Web App for generating restaurant menus and invoices",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#4b5563",
+  "orientation": "portrait-primary",
+  "categories": ["business", "productivity", "food"],
+  "lang": "en-US",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    }
+  ]
+}
