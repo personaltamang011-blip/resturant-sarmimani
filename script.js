@@ -3,6 +3,11 @@
 let menuData = {};
 let grandTotal = 0;
 let manualMode = false;
+let allMainCats = [];
+let allSub1 = [];
+let allSub2 = [];
+let allItems = [];
+let mainSearch, sub1Search, sub2Search, itemSearch;
 
 const mainCategory = document.getElementById("mainCategory");
 const subCategory1 = document.getElementById("subCategory1");
@@ -31,11 +36,69 @@ function loadAllJsons() {
 
 window.addEventListener("load", () => {
   loadFromLocalStorage();
-  loadAllJsons().catch(err => console.warn(err));
+  loadAllJsons().then(() => {
+    addSearchInputs();
+  }).catch(err => console.warn(err));
 });
+
+// ---------- Add search inputs ----------
+function addSearchInputs() {
+  // mainCategory search
+  mainSearch = document.createElement('input');
+  mainSearch.placeholder = 'Search Main Category';
+  mainSearch.style.marginBottom = '5px';
+  mainSearch.style.width = '100%';
+  mainCategory.parentNode.insertBefore(mainSearch, mainCategory);
+  mainSearch.addEventListener('input', () => {
+    const filter = mainSearch.value.toLowerCase();
+    mainCategory.innerHTML = '<option value="">-- Select Main Category --</option>';
+    allMainCats.filter(cat => cat.toLowerCase().includes(filter)).forEach(cat => mainCategory.appendChild(new Option(cat, cat)));
+  });
+
+  // sub1 search
+  sub1Search = document.createElement('input');
+  sub1Search.placeholder = 'Search Subcategory 1';
+  sub1Search.style.marginBottom = '5px';
+  sub1Search.style.width = '100%';
+  subCategory1.parentNode.insertBefore(sub1Search, subCategory1);
+  sub1Search.addEventListener('input', () => {
+    const filter = sub1Search.value.toLowerCase();
+    subCategory1.innerHTML = '<option value="">-- Select Subcategory 1 --</option>';
+    allSub1.filter(sub => sub.toLowerCase().includes(filter)).forEach(sub => subCategory1.appendChild(new Option(sub, sub)));
+  });
+
+  // sub2 search
+  sub2Search = document.createElement('input');
+  sub2Search.placeholder = 'Search Subcategory 2';
+  sub2Search.style.marginBottom = '5px';
+  sub2Search.style.width = '100%';
+  subCategory2.parentNode.insertBefore(sub2Search, subCategory2);
+  sub2Search.addEventListener('input', () => {
+    const filter = sub2Search.value.toLowerCase();
+    subCategory2.innerHTML = '<option value="">-- Select Subcategory 2 --</option>';
+    allSub2.filter(sub => sub.toLowerCase().includes(filter)).forEach(sub => subCategory2.appendChild(new Option(sub, sub)));
+  });
+
+  // item search
+  itemSearch = document.createElement('input');
+  itemSearch.placeholder = 'Search Items';
+  itemSearch.style.marginBottom = '5px';
+  itemSearch.style.width = '100%';
+  itemList.parentNode.insertBefore(itemSearch, itemList);
+  itemSearch.addEventListener('input', () => {
+    const filter = itemSearch.value.toLowerCase();
+    itemList.innerHTML = '<option value="">-- Select Item --</option>';
+    allItems.filter(item => item.name.toLowerCase().includes(filter)).forEach(item => {
+      const opt = new Option(item.name, item.name);
+      opt.dataset.price = item.price;
+      itemList.appendChild(opt);
+    });
+  });
+}
 
 // ---------- Dropdown helpers (unchanged) ----------
 function loadMainCategories() {
+  allMainCats = Object.keys(menuData);
   mainCategory.innerHTML = '<option value="">-- Select Main Category --</option>';
   Object.keys(menuData).forEach(cat => mainCategory.appendChild(new Option(cat, cat)));
 }
@@ -46,7 +109,10 @@ function updateSubCategory1() {
   itemList.innerHTML = '<option value="">-- Select Item --</option>';
   if (manualMode) return;
   const sel = mainCategory.value;
-  if (sel && menuData[sel]) Object.keys(menuData[sel]).forEach(sub => subCategory1.appendChild(new Option(sub, sub)));
+  if (sel && menuData[sel]) {
+    allSub1 = Object.keys(menuData[sel]);
+    allSub1.forEach(sub => subCategory1.appendChild(new Option(sub, sub)));
+  }
 }
 
 function updateSubCategory2() {
@@ -55,7 +121,10 @@ function updateSubCategory2() {
   if (manualMode) return;
   const main = mainCategory.value;
   const sub1 = subCategory1.value;
-  if (main && sub1 && menuData[main] && menuData[main][sub1]) Object.keys(menuData[main][sub1]).forEach(sub => subCategory2.appendChild(new Option(sub, sub)));
+  if (main && sub1 && menuData[main] && menuData[main][sub1]) {
+    allSub2 = Object.keys(menuData[main][sub1]);
+    allSub2.forEach(sub => subCategory2.appendChild(new Option(sub, sub)));
+  }
 }
 
 function updateItems() {
@@ -65,7 +134,8 @@ function updateItems() {
   const sub1 = subCategory1.value;
   const sub2 = subCategory2.value;
   if (main && sub1 && sub2 && menuData[main] && menuData[main][sub1] && menuData[main][sub1][sub2]) {
-    menuData[main][sub1][sub2].forEach(item => {
+    allItems = menuData[main][sub1][sub2].map(item => ({name: item.name, price: item.price}));
+    allItems.forEach(item => {
       const opt = new Option(item.name, item.name);
       opt.dataset.price = item.price;
       itemList.appendChild(opt);
@@ -224,6 +294,12 @@ function resetInputs() {
   // update toggle button text
   const toggleBtn = document.getElementById("toggleManualItemBtn");
   if (toggleBtn) toggleBtn.textContent = "Manual Item Entry";
+
+  // clear search inputs
+  if (mainSearch) mainSearch.value = "";
+  if (sub1Search) sub1Search.value = "";
+  if (sub2Search) sub2Search.value = "";
+  if (itemSearch) itemSearch.value = "";
 
   // set focus to date for convenience
   if (entryDate) entryDate.focus();
